@@ -1,5 +1,13 @@
 import { useState } from "react";
 
+const getApiUrl = () => {
+  const hostname = window.location.hostname;
+  const port = 8000;
+  return `http://${hostname}:${port}`;
+};
+
+const apiUrl = getApiUrl();
+
 function App() {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
@@ -20,7 +28,8 @@ function App() {
     formData.append("file", file);
 
     try {
-      const response = await fetch("http://localhost:8000/validate", {
+      console.log(`Fetching from: ${apiUrl}/validate`);
+      const response = await fetch(`${apiUrl}/validate`, {
         method: "POST",
         body: formData,
       });
@@ -30,6 +39,7 @@ function App() {
       const data = await response.json();
       setResult(data);
     } catch (err: any) {
+      console.error("Error:", err);
       setError(err.message);
     } finally {
       setLoading(false);
