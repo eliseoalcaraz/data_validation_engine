@@ -23,7 +23,6 @@ def validate_csv(df: pd.DataFrame) -> List[str, Any]:
             ]
         }
 
-
     if len(df) <= 10:
         return {
             "status": "fail",
@@ -37,5 +36,52 @@ def validate_csv(df: pd.DataFrame) -> List[str, Any]:
             ]
         }
 
-    
+    for idx, row in df.iterrows():
+        row_index = idx + 1
+        row_id = row.get("id")
+
+        email = row.get("email")
+        if pd.isna(email) or str(email).strip() == "":
+            errors.append({
+                "row_index": row_index,
+                "id": row_id,
+                "column": "email",
+                "error_message": "Email is missing or empty."
+            })
+
+        age_value = row.get("age")
+
+        if pd.isna(age_value):
+            errors.append({
+                "row_index": row_index,
+                "id": row_id,
+                "column": "age",
+                "error_message": "Invalid age format."
+            })
+        else:
+            try:
+                age_int = int(age_value)
+                if age_int < 18 or age_int > 100:
+                    errors.append({
+                        "row_index": row_index,
+                        "id": row_id,
+                        "column": "age",
+                        "error_message": "Age out of allowed range (18–100)."
+                    })
+            except (ValueError, TypeError):
+                errors.append({
+                    "row_index": row_index,
+                    "id": row_id,
+                    "column": "age",
+                    "error_message": "Invalid age format."
+                })
+
+    status = "pass" if not errors else "fail"
+
+    return {
+        "status": status,
+        "errors": errors
+    }
+
+
 
