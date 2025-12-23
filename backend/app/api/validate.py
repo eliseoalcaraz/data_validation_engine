@@ -1,8 +1,8 @@
 import pandas as pd
-from core.validator import validate_csv
+from core.validator import validate_csv, read_csv_fix_quotes
 
-df_clean = pd.read_csv("../../test/data/test_data_clean.csv")
-df_dirty = pd.read_csv("../../test/data/test_data_dirty.csv")
+df_clean = read_csv_fix_quotes('../test/data/test_data_clean.csv')
+df_dirty = read_csv_fix_quotes('../test/data/test_data_dirty.csv')
 
 result_clean = validate_csv(df_clean)
 print("=== CLEAN DATA ===")

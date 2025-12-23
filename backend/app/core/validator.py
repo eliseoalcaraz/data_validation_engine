@@ -1,9 +1,18 @@
 import pandas as pd
-
 from typing import List, Dict, Any, Optional
+from pathlib import Path
+from io import StringIO
 
+def read_csv_fix_quotes(file_path: str) -> pd.DataFrame:
+    file_path = Path(file_path)
+    with file_path.open() as f:
+        cleaned_lines = [line.strip().strip('"') for line in f.readlines()]
+    csv_content = "\n".join(cleaned_lines)
+    df = pd.read_csv(StringIO(csv_content))
+    df.columns = df.columns.str.strip().str.lower()
+    return df
 
-def validate_csv(df: pd.DataFrame) -> List[str, Any]:
+def validate_csv(df: pd.DataFrame) -> Dict[str, Any]:
 
     errors: List[Dict[str, Optional[Any]]] = []
 
