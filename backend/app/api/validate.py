@@ -1,13 +1,25 @@
+from fastapi import APIRouter, UploadFile, File, HTTPException
 import pandas as pd
-from core.validator import validate_csv, read_csv_fix_quotes
+from core.validator import read_csv_fix_quotes, validate_csv
 
-df_clean = read_csv_fix_quotes('../test/data/test_data_clean.csv')
-df_dirty = read_csv_fix_quotes('../test/data/test_data_dirty.csv')
+router = APIRouter()
 
-result_clean = validate_csv(df_clean)
-print("=== CLEAN DATA ===")
-print(result_clean)
+@router.post("/validate")
+async def validate_csv_file(file: UploadFile = File(...)):
+    if not file.filename.endswith('.csv'):
+        raise HTTPException(status_code=400, detail="Invalid file type. Please upload a CSV file.")
 
-result_dirty = validate_csv(df_dirty)
-print("\n=== DIRTY DATA ===")
-print(result_dirty)
+    contents = await file.read()
+    temp_file_path = f"/tmp/{file.filename}"
+
+    with open(temp_file_path, 'wb') as temp_file:
+        temp_file.write(contents)
+
+    try:
+        df = read_csv_fix_quotes(temp_file_path)
+        validation_result = validate_csv(df)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
+
+    return validation_result
+
