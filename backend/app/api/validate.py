@@ -1,6 +1,6 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
 import pandas as pd
-from core.validator import read_csv_fix_quotes, validate_csv
+from ..core.validator import read_csv_fix_quotes, validate_csv
 
 router = APIRouter()
 
